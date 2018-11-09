@@ -1,11 +1,10 @@
 import sys
 import pathlib
-import botw_resource
+import resource
 
-dump_root_path = pathlib.Path(sys.argv[1])
-my_rel_path = pathlib.Path("Actor", "Pack", "ActorObserverByActorTagTag.sbactorpack", "Actor", "ActorLink", "ActorObserverByActorTagTag.bxml")
+dump_workspace_path = pathlib.Path(sys.argv[1])
+my_res_path = pathlib.Path("Actor", "Pack", "ActorObserverByActorTagTag.sbactorpack",)
 
-resource_manager = botw_resource.BotwResourceManager(dump_root_path)
-resource = resource_manager.get_resource(dump_root_path, my_rel_path)
-my_data = resource.get_data()
-print(my_data)
+workspace_manager = resource.WorkspaceManager(dump_workspace_path)
+dump_workspace = workspace_manager.dump_workspace
+print([x.name for x in dump_workspace.top_dir_res.contents])
