@@ -2,9 +2,10 @@ import sys
 import pathlib
 import resource
 
-dump_workspace_path = pathlib.Path(sys.argv[1])
-my_res_path = pathlib.Path("Actor", "Pack", "ActorObserverByActorTagTag.sbactorpack",)
+root = resource.RootNode(pathlib.Path(sys.argv[1]))
+root.build_all_children()
 
-workspace_manager = resource.WorkspaceManager(dump_workspace_path)
-dump_workspace = workspace_manager.dump_workspace
-print([x.name for x in dump_workspace.top_dir_res.contents])
+actor = [x for x in root.children if x.name == "Actor"][0]
+pack = [x for x in actor.children if x.name == "Pack"][0]
+actorpack = [x for x in pack.children if x.name == "ActorObserverByActorTagTag.sbactorpack"][0]
+print(actorpack.get_data())
