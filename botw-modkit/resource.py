@@ -1,5 +1,6 @@
 from tinytree import Tree
 from pathlib import Path
+import wszst_yaz0
 
 def get_class_from_abs_path(abs_path):
     if abs_path.is_dir():
@@ -72,9 +73,10 @@ class DirectoryNode(NamedNode):
             node.build_all_children(stop_at_sarc)
 
 class FileNode(NamedNode):
-    def __init__(self, name, children=None):
+    def __init__(self, name):
         self.data = None
-        super().__init__(name, children)
+        self.compressed_data = None
+        super().__init__(name, None)
     
     def __repr__(self):
         return self.name
@@ -86,14 +88,21 @@ class FileNode(NamedNode):
     def get_data(self):
         return self.data or self.load_data()
     
+    def get_raw_data(self):
+        self.get_data()
+        return self.compressed_data or self.data()
+    
     def load_data(self):
         for node in self.pathToRoot():
             if isinstance(node, SARCNode):
                 self.data = node.load_data_of_child(self)
-                return self.data
-        # Not in a SARC
-        self.data = self.get_abs_path().read_bytes()
+                break
+        else:
+            self.data = self.get_abs_path().read_bytes()
+        if self.data[:4] == b"Yaz0":
+            self.compressed_data = self.data
+            self.data = wszst_yaz0.decompress(self.compressed_data)
         return self.data
 
 class SARCNode(DirectoryNode, FileNode):
-    pass
+    def __init__(self, 
